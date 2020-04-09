@@ -59,6 +59,24 @@ server.post('/users', (req, res) => {
     }
 });
 
+server.delete('/users/:id', (req, res) => {
+    const user = db.getUserById(req.params.id);
+    try {
+        if (user) {
+            db.deleteUser(user.id);
+            res.status(204).end();
+        } else {
+            res.status(404).json({
+                message: 'The user with the specific ID does not exist.'
+            });
+        }
+    } catch {
+        res.status(500).json({
+            message: 'The user could not be removed.'
+        });
+    }
+});
+
 // watch for connections on port 5000
 server.listen(5000, () =>
   console.log('Server running on http://localhost:5000')
