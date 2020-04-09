@@ -77,6 +77,34 @@ server.delete('/users/:id', (req, res) => {
     }
 });
 
+server.patch('/users/:id', (req, res) => {
+    const user = db.getUserById(req.params.id);
+    const { name, bio } = req.body;
+    if (user) {
+        try {
+            if (!name || !bio) {
+                res.status(400).json({
+                    message: 'Please provide name and bio for the user.'
+                });
+            } else {
+                const updatedUser = db.updateUser(user.id, {
+                    name: req.body.name || user.name,
+                    bio: req.body.bio || user.bio
+                });
+                res.status(200).json(updatedUser);
+            }
+        } catch {
+            res.status(500).json({
+                message: 'The user information could not be modified.'
+            });
+        }
+    } else {
+        res.status(404).json({
+            message: 'The user with the specified ID does not exist.'
+        });
+    }
+});
+
 // watch for connections on port 5000
 server.listen(5000, () =>
   console.log('Server running on http://localhost:5000')
